@@ -1,4 +1,4 @@
-import { useFieldArray, useForm } from 'react-hook-form';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Address from '../Address';
@@ -20,9 +20,11 @@ export type AddressesFormData = z.infer<typeof AddressesSchema>;
 
 export const Form = () => {
 
-    const { control, register, handleSubmit, formState: { errors } } = useForm<AddressesFormData>({
+    const methods = useForm<AddressesFormData>({
         resolver: zodResolver(AddressesSchema)
-    })
+    });
+
+    const { control, handleSubmit } = methods;
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -41,14 +43,17 @@ export const Form = () => {
                     Add Address
                 </button>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                {fields.map((field, index) => (
-                    <Address field={field} index={index} register={register} remove={remove} errors={errors} />
-                ))}
-                <div className='button-div'>
-                    <button type='submit'>Submit</button>
-                </div>
-            </form>
+
+            <FormProvider {...methods}>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {fields.map((field, index) => (
+                        <Address field={field} index={index} remove={remove} />
+                    ))}
+                    <div className='button-div'>
+                        <button type='submit'>Submit</button>
+                    </div>
+                </form>
+            </FormProvider>
         </div>
     )
 

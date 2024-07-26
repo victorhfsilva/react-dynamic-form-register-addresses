@@ -1,4 +1,4 @@
-import { FieldArrayWithId, FieldErrors, UseFieldArrayRemove, UseFormRegister } from "react-hook-form";
+import { FieldArrayWithId, FieldErrors, UseFieldArrayRemove, useFormContext, UseFormRegister } from "react-hook-form";
 import { AddressesFormData } from "../Form";
 import './styles.css'
 import InputMask from 'react-input-mask';
@@ -7,12 +7,38 @@ import { states } from "../../constants/states";
 interface AddressProps {
     field: FieldArrayWithId<AddressesFormData, "addresses", "id">;
     index: number;
-    register: UseFormRegister<AddressesFormData>;
     remove: UseFieldArrayRemove,
-    errors: FieldErrors<AddressesFormData>
 }
 
-const Address = ({ field, index, register, remove, errors }: AddressProps) => {
+const Address = ({ field, index, remove }: AddressProps) => {
+
+    const { register, formState: { errors }, setValue, setError } = useFormContext<AddressesFormData>();
+
+    const fetchAddress = async (cep: string) => {
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await response.json();
+
+            if (data.erro) {
+                setError(`addresses.${index}.cep`, { type: 'manual', message: 'CEP inválido' });
+            } else {
+                setValue(`addresses.${index}.street`, data.logradouro);
+                setValue(`addresses.${index}.district`, data.bairro);
+                setValue(`addresses.${index}.city`, data.localidade);
+                setValue(`addresses.${index}.uf`, data.uf);
+            }
+        } catch (error) {
+            setError(`addresses.${index}.cep`, { type: 'manual', message: 'Erro ao buscar CEP' });
+        }
+    };
+
+    const handleCepBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+        const cep = event.target.value;
+        if (cep) {
+            fetchAddress(cep);
+        }
+    };
+
     return (
         <div key={field.id}>
             <div className="address-title-div">
@@ -22,7 +48,12 @@ const Address = ({ field, index, register, remove, errors }: AddressProps) => {
 
             <div className='input-div'>
                 <label htmlFor={`addresses.${index}.cep`}>CEP: </label>
-                <InputMask mask="99999-999" type="text" id={`addresses.${index}.cep`} {...register(`addresses.${index}.cep`)} />
+                <InputMask
+                    mask="99999-999"
+                    type="text"
+                    id={`addresses.${index}.cep`}
+                    {...register(`addresses.${index}.cep`)}
+                    onBlur={handleCepBlur} />
                 <span>{errors.addresses?.[index]?.cep?.message}</span>
             </div>
 
