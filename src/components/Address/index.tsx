@@ -1,4 +1,4 @@
-import { FieldArrayWithId, FieldErrors, UseFieldArrayRemove, useFormContext, UseFormRegister } from "react-hook-form";
+import { FieldArrayWithId, UseFieldArrayRemove, useFormContext } from "react-hook-form";
 import { AddressesFormData } from "../Form";
 import './styles.css'
 import InputMask from 'react-input-mask';

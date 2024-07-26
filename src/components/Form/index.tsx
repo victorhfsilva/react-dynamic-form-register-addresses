@@ -24,7 +24,7 @@ export const Form = () => {
         resolver: zodResolver(AddressesSchema)
     });
 
-    const { control, handleSubmit } = methods;
+    const { control, handleSubmit, formState: { isSubmitSuccessful } } = methods;
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -54,6 +54,8 @@ export const Form = () => {
                     </div>
                 </form>
             </FormProvider>
+
+            {isSubmitSuccessful && <p>Data was submitted successfully.</p>}
         </div>
     )
 
