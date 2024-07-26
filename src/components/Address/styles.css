@@ -1,0 +1,29 @@
+.address-title-div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 600px;
+}
+
+button {
+    max-height: 20px;
+}
+
+.input-div {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+input {
+    width: 100%
+}
+
+select {
+    width: calc(100% + 9px);
+    height: 25px;
+}
